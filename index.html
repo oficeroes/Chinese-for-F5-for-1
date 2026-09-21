@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>現代漢語刷題 · 精簡版</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:#ffffff;
+    color:#1a1a1a;
+    min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:20px;
+  }
+  .card{
+    width:100%;max-width:600px;
+    padding:32px 24px;
+  }
+  .section-title{
+    font-family:"Songti SC","STSong","SimSun",serif;
+    font-size:2rem;font-weight:700;
+    text-align:center;
+    letter-spacing:14px;text-indent:14px;
+    margin-bottom:8px;
+  }
+  .section-title::after{
+    content:'';display:block;
+    width:32px;height:2px;background:#e8e8e8;
+    margin:16px auto 0;
+  }
+  .meta{
+    font-size:.75rem;color:#999;
+    margin:22px 0 14px;
+    display:flex;gap:8px;flex-wrap:wrap;
+    justify-content:center;
+  }
+  .meta span{
+    background:#f5f5f5;border-radius:999px;
+    padding:4px 10px;
+  }
+  .question{
+    font-size:1.25rem;line-height:1.7;
+    font-weight:600;
+    margin-bottom:28px;
+  }
+  .options{
+    display:flex;flex-direction:column;gap:11px;
+  }
+  .option{
+    width:100%;text-align:left;
+    border:1.5px solid #ededed;border-radius:14px;
+    padding:15px 17px;
+    font-size:1rem;line-height:1.55;
+    background:#fff;color:#1a1a1a;
+    cursor:pointer;transition:all .12s ease;
+    display:flex;align-items:flex-start;gap:12px;
+    font-family:inherit;
+  }
+  .option:hover:not(:disabled){border-color:#d5d5d5;background:#fafafa}
+  .option:active:not(:disabled){transform:scale(.99)}
+  .option:disabled{cursor:default}
+  .letter{
+    flex:none;width:28px;height:28px;border-radius:50%;
+    border:1.5px solid #e5e5e5;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:.85rem;color:#666;
+    background:#fff;
+    transition:all .12s ease;
+  }
+  .option.correct{border-color:#2e9e65;background:#f0faf4}
+  .option.correct .letter{background:#2e9e65;border-color:#2e9e65;color:#fff}
+  .option.wrong{border-color:#e04e3d;background:#fdf3f2}
+  .option.wrong .letter{background:#e04e3d;border-color:#e04e3d;color:#fff}
+  .option.dim{opacity:.45}
+  .mark{margin-left:auto;font-weight:700;font-size:1.1rem}
+  .correct .mark{color:#2e9e65}
+  .wrong .mark{color:#e04e3d}
+
+  .feedback{
+    margin-top:22px;padding:18px 20px;border-radius:14px;
+    font-size:.95rem;line-height:1.8;
+    animation:fadeIn .25s ease both;
+  }
+  .feedback.good{background:#f0faf4;color:#1f6b42;border:1px solid #cfeadd}
+  .feedback.bad{background:#fdf3f2;color:#8a3328;border:1px solid #f3d6d2}
+  .feedback .ans{font-weight:700;margin-bottom:6px;font-size:1.05rem}
+  .feedback p+p{margin-top:8px}
+
+  .btn{
+    width:100%;margin-top:16px;padding:14px 18px;border:none;border-radius:14px;
+    font-size:1rem;font-weight:700;cursor:pointer;transition:.12s;
+    font-family:inherit;
+  }
+  .btn-primary{background:#1a1a1a;color:#fff}
+  .btn-primary:hover{background:#333}
+  .btn-primary:active{transform:scale(.98)}
+
+  .hint{
+    text-align:center;margin-top:24px;font-size:.72rem;color:#ccc;
+    line-height:1.6;
+  }
+
+  .version{
+    text-align:center;font-size:.7rem;color:#bbb;margin-top:8px;
+  }
+
+  .section-switch{
+    text-align:center;margin:-6px 0 14px;font-size:.85rem;
+    color:#666;animation:fadeIn .4s ease both;
+  }
+  .section-switch .tag{
+    display:inline-block;padding:4px 12px;border-radius:999px;
+    background:#f5f5f5;border:1px solid #eee;
+  }
+
+  /* 劃線成語 */
+  .idiom{
+    color:#c62828;
+    text-decoration:underline;
+    text-decoration-color:#c62828;
+    text-underline-offset:3px;
+    font-weight:600;
+  }
+
+  /* 訓練模式欄 */
+  .mode-bar{
+    width:100%;max-width:600px;
+    margin-top:28px;
+    padding:0 24px 24px;
+  }
+  .mode-title{
+    font-size:.8rem;color:#999;text-align:center;margin-bottom:10px;
+    letter-spacing:1px;
+  }
+  .mode-buttons{
+    display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+  }
+  .mode-btn{
+    border:1.5px solid #e5e5e5;background:#fff;color:#555;
+    padding:7px 12px;border-radius:999px;
+    font-size:.85rem;cursor:pointer;transition:all .12s;
+    font-family:inherit;
+  }
+  .mode-btn:hover{border-color:#bbb;background:#fafafa}
+  .mode-btn.active{
+    background:#1a1a1a;color:#fff;border-color:#1a1a1a;
+  }
+
+  .empty{
+    text-align:center;padding:60px 20px;color:#999;
+  }
+  .empty .big{font-size:2rem;margin-bottom:10px}
+
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  @media (max-width:480px){
+    body{padding:16px}
+    .card{padding:24px 16px}
+    .question{font-size:1.15rem}
+    .section-title{font-size:1.7rem;letter-spacing:12px;text-indent:12px}
+    .mode-bar{padding:0 16px 20px}
+    .mode-btn{padding:6px 10px;font-size:.8rem}
+  }
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <h1 class="section-title" id="sectionTitle">漢字</h1>
+  <div class="section-switch" id="sectionSwitch"></div>
+  <div class="meta" id="meta"></div>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+  <div id="feedback"></div>
+  <div class="version" id="versionInfo"></div>
+</div>
+
+<div class="mode-bar" id="modeBar">
+  <div class="mode-title">訓練模式</div>
+  <div class="mode-buttons" id="modeButtons"></div>
+</div>
+
+<!-- 资料库：优先读取同目录下的题库数据.js -->
+<script src="题库数据.js"></script>
+<script>
+/* ============================================================
+   兜底题库快照
+   当读取不到外部「题库数据.js」时自动使用。
+   平时请只维护「题库数据.js」，更新后同步替换此快照。
+============================================================ */
+const EMBEDDED_FALLBACK = {
+  meta: {
+    title: '現代漢語刷題',
+    book: '《現代漢語專題訓練》',
+    ids: '漢字：第 2/3/4/5/8/10/15 題；字音：第 1-6 題；字形：第 1-10 題；標點：第 1-5 / 7-9 題；成語：第 1-10 題',
+    version: 8,
+    updated: '2026-09-21'
+  },
+  questions: [
+    /* ===================== 一、漢字 ===================== */
+    {
+      id: 'q2',
+      section: '漢字',
+      badge: '原书第2题',
+      source: '2014/2015 澳大試題',
+      tag: '六書 · 字形結構',
+      text: '以下對漢字的描述，錯誤的一項是：',
+      options: [
+        '“羊”是象形字，像羊頭形。',
+        '“血”是指事字，表示器皿中盛的是血。',
+        '“休”是會意字，表示人靠著樹休息。',
+        '“膏”是形聲字，“高”表音，“月”表義，表示油脂如天上月亮一樣白。'
+      ],
+      answer: 3,
+      explain: [
+        '正解是 D。「膏」确为形声字，「高」表音；但「月」是「肉」的变形（肉月旁），表义为肉体、油脂，与天上月亮无关。「油脂如天上月亮一样白」是望文生义。',
+        '其余三项描述本身无误：「羊」像羊头，为象形字；「血」在「皿」中加指示符号，为指事字；「休」从人从木，表示人倚树休息，为会意字。'
+      ]
+    },
+    {
+      id: 'q3',
+      section: '漢字',
+      badge: '原书第3题',
+      source: '理工',
+      tag: '象形字',
+      text: '下列漢字中都是象形字的一項是：',
+      options: [
+        '火　天　下',
+        '亦　我　莫',
+        '燕　山　井',
+        '刃　末　首'
+      ],
+      answer: 2,
+      explain: [
+        '正解是 C。「燕」像燕子飞翔之形，「山」像三峰并立之形，「井」像井栏交叉之形，三者都是描摹实物的象形字。',
+        'A 中「下」为指事字；B 中「亦」为指事字、「莫」为会意字；D 中「刃」「末」均为指事字。'
+      ]
+    },
+    {
+      id: 'q4',
+      section: '漢字',
+      badge: '原书第4题',
+      source: '理工',
+      tag: '形聲字',
+      text: '從字的結構形式看，都是形聲字的一組是：',
+      options: [
+        '庫　驕　載　轉',
+        '戰　殖　狡　初',
+        '騰　聞　疆　辨',
+        '扁　錦　鼻　熔'
+      ],
+      answer: 2,
+      explain: [
+        '正解是 C。騰（从馬，朕声）、聞（从耳，门声）、疆（从弓/土，畺声）、辨（从刀，辡声）均为形声字。',
+        'A 中「庫」为会意字；B 中「初」为会意字；D 中「扁」为会意字。'
+      ]
+    },
+    {
+      id: 'q5',
+      section: '漢字',
+      badge: '原书第5题',
+      source: '理工',
+      tag: '造字法',
+      text: '下列現代漢字的構成方式中，構字最多的一項是：',
+      options: [
+        '象形字',
+        '指事字',
+        '形聲字',
+        '會意字'
+      ],
+      answer: 2,
+      explain: [
+        '正解是 C。形声字由形旁（表义）和声旁（表音）组成，既能提示意义又能标注读音，是能产性最强的造字方式。',
+        '现代汉字中形声字约占 90% 以上，数量远多于象形字、指事字和会意字。'
+      ]
+    },
+    {
+      id: 'q8',
+      section: '漢字',
+      badge: '原书第8题',
+      source: '漢字常識',
+      tag: '六書 · 字體演變',
+      text: '下列關於漢字常識判斷正確的一項是：',
+      options: [
+        '古今漢字大體是按照“六書”的法則來造字的，其中“形聲、假借”是用得最多的兩種造字法。',
+        '一般把漢字的發展過程劃分為古文字、今文字兩個階段。以文字形體論，甲骨文、金文、篆書、隸書屬於古文字；楷書、行書、草書屬於今文字。',
+        '金文是指先秦時期鑄或刻在青銅器上的文字，秦始皇統一六國後改稱為小篆，並成為標準字體。',
+        '甲骨文是指商朝後期王室用於占卜記事而在龜甲或獸骨上契刻的文字。'
+      ],
+      answer: 3,
+      explain: [
+        '正解是 D。甲骨文是商朝后期王室为占卜记事而在龟甲、兽骨上契刻的文字，表述准确。',
+        'A 错：六书中只有象形、指事、会意、形声是造字法，假借是用字法，不是造字法。',
+        'B 错：隶书属于今文字，古文字与今文字的分界是「隶变」。',
+        'C 错：小篆并非由金文「改称」而来，而是秦统一后在秦国大篆基础上整理简化而成。'
+      ]
+    },
+    {
+      id: 'q10',
+      section: '漢字',
+      badge: '原书第10题',
+      source: '漢字常識',
+      tag: '指事字',
+      text: '下列各組漢字，全部屬於指事字的一項是：',
+      options: [
+        '草　笆　步　采',
+        '三　上　甘　中',
+        '魚　鳥　月　竹',
+        '奴　秉　男　麈'
+      ],
+      answer: 1,
+      explain: [
+        '正解是 B。「三」以三横示数，「上」「甘」「中」皆用抽象符号指示位置或状态，四者都是指事字。',
+        'A 中草、笆为形声字，步、采为会意字；C 中四字全为象形字；D 中奴、秉、男为会意字，「麈（zhǔ）」为形声字。'
+      ]
+    },
+    {
+      id: 'q15',
+      section: '漢字',
+      badge: '原书第15题',
+      source: '漢字常識',
+      tag: '會意字',
+      text: '下列各組漢字，全部屬於會意字的一項是：',
+      options: [
+        '涉　秉　盥　家',
+        '武　柯　江　从',
+        '步　信　射　鯉',
+        '降　陟　比　材'
+      ],
+      answer: 0,
+      explain: [
+        '正解是 A。「涉」两脚渡水、「秉」手持禾束、「盥」双手掬水于皿上洗濯、「家」屋内养豕，均由两个以上表意部件组合而成，都是会意字。',
+        'B 中「柯」（从木、可声）、「江」（从水、工声）为形声字；C 中「鯉」（从鱼、里声）为形声字；D 中「材」（从木、才声）为形声字。'
+      ]
+    },
+
+    /* ===================== 二、字音 ===================== */
+    {
+      id: 'z1',
+      section: '字音',
+      badge: '原书第1题',
+      source: '字音',
+      tag: '同音字辨識',
+      text: '下列詞語中劃線的字的讀音完全相同的一組是：',
+      options: [
+        '樞紐　倏忽　殊途同歸　自出機杼',
+        '果脯　拊掌　破釜沉舟　驚魂甫定',
+        '旋風　渲染　氣宇軒昂　光彩炫目',
+        '羸弱　縈繞　蠅營狗苟　惡貫滿盈'
+      ],
+      answer: 1,
+      explain: [
+        '正解是 B。四字劃線字均读 fǔ：果脯（fǔ）、拊（fǔ）掌、破釜（fǔ）沉舟、驚魂甫（fǔ）定。',
+        'A 中「杼」读 zhù，其余读 shū；C 中「軒」读 xuān，其余读 xuàn；D 中「羸」读 léi，其余读 yíng。'
+      ]
+    },
+    {
+      id: 'z2',
+      section: '字音',
+      badge: '原书第2题',
+      source: '字音',
+      tag: '同音字辨識',
+      text: '下列詞語中劃線字的讀音完全相同的一組是：',
+      options: [
+        '媲美　偏僻　鮮有其匹　開天闢地',
+        '襤褸　僂僂　條分縷析　屢險如夷',
+        '枯槁　訓詁　怙惡不悛　沽名釣譽',
+        '狙擊　齟齬　含英咀華　越俎代庖'
+      ],
+      answer: 1,
+      explain: [
+        '正解是 B。四字劃線字均读 lǚ：襤褸（lǚ）、僂（lǚ）僂、條分縷（lǚ）析、屢（lǚ）險如夷。',
+        'A 中「匹」读 pǐ，其余读 pì；C 中「怙」读 hù，其余读 gǔ；D 中「齟齬」读 jǔ yǔ、「俎」读 zǔ，「狙」读 jū，四字读音不同。'
+      ]
+    },
+    {
+      id: 'z3',
+      section: '字音',
+      badge: '原书第3题',
+      source: '字音',
+      tag: '同音字辨識',
+      text: '下列詞語中劃線的字的讀音完全相同的一組是：',
+      options: [
+        '撫恤　胸脯　拊掌大笑　肺腑之言',
+        '輕佻　條蟲　文韜武略　罪惡滔天',
+        '熨帖　手諭　長籲短歎　賣官鬻爵',
+        '詰問　攻訐　桀驁不馴　殘碑斷碣'
+      ],
+      answer: 3,
+      explain: [
+        '正解是 D。四字劃線字均读 jié：詰（jié）問、攻訐（jié）、桀（jié）驁不馴、殘碑斷碣（jié）。',
+        'A 中「脯」读 pú，其余读 fǔ；B 中「佻」读 tiāo，「條」读 tiáo，「韜」「滔」读 tāo；C 中「籲」读 xū，其余读 yù。'
+      ]
+    },
+    {
+      id: 'z4',
+      section: '字音',
+      badge: '原书第4题',
+      source: '字音',
+      tag: '多音字辨識',
+      text: '下列詞語中劃線的字，每對的讀音完全相同的一組是：',
+      options: [
+        '勾當/勾搭　吐露/露馬腳　勒索/懸崖勒馬',
+        '著涼/著想　夾被/夾生飯　勁歌/疾風勁草',
+        '炮仗/炮彈　關卡/卡脖子　曾經/曾幾何時',
+        '作坊/作業　倒班/倒春寒　宿舍/魂不守舍'
+      ],
+      answer: 2,
+      explain: [
+        '正解是 C。每对读音均相同：炮（pào）仗 / 炮（pào）彈，關卡（qiǎ）/ 卡（qiǎ）脖子，曾（céng）經 / 曾（céng）幾何時。',
+        'A 中「勾當」读 gòu、「勾搭」读 gōu，「吐露」读 lù、「露馬腳」读 lòu；B 中「著涼」读 zháo、「著想」读 zhuó，「夾被」读 jiá、「夾生飯」读 jiā；D 中「作坊」读 zuō、「作業」读 zuò，「倒班」读 dǎo、「倒春寒」读 dào。'
+      ]
+    },
+    {
+      id: 'z5',
+      section: '字音',
+      badge: '原书第5题',
+      source: '字音',
+      tag: '多音字辨識',
+      text: '下列詞語中劃線的字，每對的讀音完全相同的一組是：',
+      options: [
+        '露天/露臉　咀嚼/咬文嚼字　敷衍塞責/不塞不流',
+        '湖泊/漂泊　曝光/一曝十寒　屢見不鮮/鮮有其匹',
+        '屏障/屏除　地殼/金蟬脫殼　螳臂當車/安步當車',
+        '薄弱/單薄　阿諛/剛直不阿　無色無臭/乳臭未乾'
+      ],
+      answer: 3,
+      explain: [
+        '正解是 D。每对读音均相同：薄（bó）弱 / 單薄（bó），阿（ē）諛 / 剛直不阿（ē），無色無臭（xiù）/ 乳臭（xiù）未乾。',
+        'A 中「露天」读 lù、「露臉」读 lòu，「咀嚼」读 jué、「咬文嚼字」读 jiáo；B 中「湖泊」读 pō、「漂泊」读 bó，「屢見不鮮」读 xiān、「鮮有其匹」读 xiǎn；C 中「屏障」读 píng、「屏除」读 bǐng，「螳臂當車」读 dāng、「安步當車」读 dàng。'
+      ]
+    },
+    {
+      id: 'z6',
+      section: '字音',
+      badge: '原书第6题',
+      source: '字音',
+      tag: '多音字辨識',
+      text: '下列劃線字的讀音，每對都相同的一組是：',
+      options: [
+        '狹隘/謚號　校對/校閱三軍　強弩之末/強詞奪理',
+        '樵夫/憔悴　朝暉/朝令夕改　安土重遷/老成持重',
+        '起哄/哄騙　挨宰/挨家挨戶　乘風破浪/乘人之危',
+        '毗鄰/蚍蜉　稱道/稱心如意　怒髮衝冠/沐猴而冠'
+      ],
+      answer: 1,
+      explain: [
+        '正解是 B。每对读音均相同：樵（qiáo）夫 / 憔（qiáo）悴，朝（zhāo）暉 / 朝（zhāo）令夕改，安土重（zhòng）遷 / 老成持重（zhòng）。',
+        'A 中「狹隘」读 ài、「謚號」读 shì，「強弩之末」读 qiáng、「強詞奪理」读 qiǎng；C 中「起哄」读 hòng、「哄騙」读 hǒng，「挨宰」读 ái、「挨家挨戶」读 āi；D 中「稱道」读 chēng、「稱心如意」读 chèn，「怒髮衝冠」读 guān、「沐猴而冠」读 guàn。'
+      ]
+    },
+
+    /* ===================== 三、字形辨析 ===================== */
+    {
+      id: 'x1',
+      section: '字形',
+      badge: '原书第1题',
+      source: '字形辨析',
+      tag: '錯別字辨識',
+      text: '以下各組詞語中，沒有錯別字的一項是：',
+      options: [
+        '風靡　刎頸之交　自詡　焚膏既晷',
+        '寒磣　奮筆急書　嘗試　殺一儆百',
+        '文牘　改弦更章　對峙　放浪形骸',
+        '痊癒　淋漓盡致　編纂　理屈詞窮'
+      ],
+      answer: 3,
+      explain: [
+        '正解是 D。四詞均无错别字。',
+        'A 中「焚膏既晷」应为「焚膏继晷」（继：继续；晷：日影）；B 中「奮筆急書」应为「奮筆疾書」（疾：快速）；C 中「改弦更章」应为「改弦更张」（张：给乐器上弦）。'
+      ]
+    },
+    {
+      id: 'x2',
+      section: '字形',
+      badge: '原书第2题',
+      source: '2015 兩校考題',
+      tag: '成語字形',
+      text: '下列成語中，書寫完全正確的是哪一組？',
+      options: [
+        '白壁微瑕　明辨是非　綠草如茵　甘之如貽',
+        '戒驕戒躁　竭澤而漁　罄竹難書　功虧一匱',
+        '自顧不暇　眾口鑠金　怦然心動　虛無縹緲',
+        '毛骨悚然　耳濡目染　篷蓽生輝　前倨後恭'
+      ],
+      answer: 2,
+      explain: [
+        '正解是 C。四個成語书写均正确。',
+        'A 中「白壁微瑕」应为「白璧微瑕」（璧：美玉），「甘之如貽」应为「甘之如飴」（飴：麦芽糖，甜）；B 中「功虧一匱」应为「功虧一簣」（簣：盛土的筐）；D 中「篷蓽生輝」应为「蓬蓽生輝」（蓬：蓬草）。'
+      ]
+    },
+    {
+      id: 'x3',
+      section: '字形',
+      badge: '原书第3题',
+      source: '2014 兩校考題',
+      tag: '成語字形',
+      text: '下列成語中，書寫完全正確的是哪一組？',
+      options: [
+        '前仆後繼　含辛如苦　大音希聲　慘無人道',
+        '陰謀詭計　一籌莫展　喬裝打扮　入不敷出',
+        '尋私舞弊　孺子可教　無獨有偶　墨守成規',
+        '一張一弛　歡度春節　發憤圖強　高瞻遠矚'
+      ],
+      answer: 1,
+      explain: [
+        '正解是 B。四個成語书写均正确。',
+        'A 中「含辛如苦」应为「含辛茹苦」（茹：吃）；C 中「尋私舞弊」应为「徇私舞弊」（徇：曲从、偏私）；D 项四字本身亦无错别字，但标准答案取 B，做题时以给定答案为准。'
+      ]
+    },
+    {
+      id: 'x4',
+      section: '字形',
+      badge: '原书第4题',
+      source: '2013 兩校考題',
+      tag: '成語字形',
+      text: '下列成語中，書寫完全正確的是哪一組？',
+      options: [
+        '首屈一指　禮上往來　手不釋卷　栩栩如生',
+        '通宵不眠　睡眼惺松　喧賓奪主　當仁不讓',
+        '讀書札記　記憶猶新　和靄可親　滿山遍野',
+        '綠樹成陰　一勞永逸　風聲鶴唳　甘拜下風'
+      ],
+      answer: 3,
+      explain: [
+        '正解是 D。四個成語书写均正确。',
+        'A 中「禮上往來」应为「禮尚往來」（尚：注重）；B 中「睡眼惺松」应为「睡眼惺忪」，「通霄不眠」应为「通宵不眠」；C 中「和靄可親」应为「和藹可親」。'
+      ]
+    },
+    {
+      id: 'x5',
+      section: '字形',
+      badge: '原书第5题',
+      source: '字形辨析',
+      tag: '錯別字辨識',
+      text: '下列各組詞語中，沒有錯別字的一項是：',
+      options: [
+        '苦心孤詣　出類拔萃　提綱挈領　當仁不讓',
+        '嘔心歷血　駭人聽聞　言簡意該　得不償失',
+        '恬不知恥　中流底柱　陰謀鬼計　兩軍對峙',
+        '鞠躬盡萃　膾炙人口　風馳電掣　惡貫滿盈'
+      ],
+      answer: 0,
+      explain: [
+        '正解是 A。四詞均无错别字。',
+        'B 中「嘔心歷血」应为「嘔心瀝血」（瀝：滴），「言簡意該」应为「言簡意賅」（賅：完备）；C 中「中流底柱」应为「中流砥柱」（砥柱：山名），「陰謀鬼計」应为「陰謀詭計」；D 中「鞠躬盡萃」应为「鞠躬盡瘁」（瘁：劳累）。'
+      ]
+    },
+    {
+      id: 'x6',
+      section: '字形',
+      badge: '原书第6题',
+      source: '字形辨析',
+      tag: '錯別字辨識',
+      text: '下列各組詞語中，沒有錯別字的一項是：',
+      options: [
+        '流言蜚語　無微不致　淋漓盡至　厝火積薪',
+        '千里迢迢　飽經蒼桑　嬌柔造作　措手不及',
+        '再接再厲　按部就班　流連忘返　大材小用',
+        '默守成規　直接了當　人才輩出　大聲疾呼'
+      ],
+      answer: 2,
+      explain: [
+        '正解是 C。四詞均无错别字。',
+        'A 中「無微不致」应为「無微不至」，「淋漓盡至」应为「淋漓盡致」；B 中「飽經蒼桑」应为「飽經滄桑」，「嬌柔造作」应为「矯揉造作」；D 中「默守成規」应为「墨守成規」，「直接了當」应为「直截了當」。'
+      ]
+    },
+    {
+      id: 'x7',
+      section: '字形',
+      badge: '原书第7题',
+      source: '字形辨析',
+      tag: '錯別字辨識',
+      text: '下列各組詞語中，沒有錯別字的一項是：',
+      options: [
+        '流芳百世　針貶時弊　良莠不齊　破斧沉舟',
+        '樂此不疲　抱殘守缺　不即不離　截然不同',
+        '老泰龍鐘　頓開茅塞　爾虞我詐　風蝕殘年',
+        '滄海一粟　不厭其煩　拾人牙惠　暗然失色'
+      ],
+      answer: 1,
+      explain: [
+        '正解是 B。四詞均无错别字。',
+        'A 中「針貶時弊」应为「針砭時弊」（砭：古代石针），「破斧沉舟」应为「破釜沉舟」；C 中「老泰龍鐘」应为「老態龍鐘」，「風蝕殘年」应为「風燭殘年」；D 中「拾人牙惠」应为「拾人牙慧」（慧：智慧，指片言只语），「暗然失色」应为「黯然失色」。'
+      ]
+    },
+    {
+      id: 'x8',
+      section: '字形',
+      badge: '原书第8题',
+      source: '字形辨析',
+      tag: '錯別字辨識',
+      text: '下列各組詞語中，沒有錯別字的一項是：',
+      options: [
+        '報酬　爆炸　步履維艱　雄才大略',
+        '卑怯　辨析　慘絕人寰　燦然一笑',
+        '噩耗　才華　插科打諢　陳詞爛調',
+        '喝采　遨遊　吃裡扒外　斥之以鼻'
+      ],
+      answer: 0,
+      explain: [
+        '正解是 A。四詞均无错别字。',
+        'B 中「燦然一笑」应为「粲然一笑」（粲：鲜明、露齿而笑）；C 中「陳詞爛調」应为「陳詞濫調」（濫：空泛）；D 中「喝采」应为「喝彩」，「斥之以鼻」应为「嗤之以鼻」（嗤：讥笑）。'
+      ]
+    },
+    {
+      id: 'x9',
+      section: '字形',
+      badge: '原书第9题',
+      source: '字形辨析',
+      tag: '錯別字辨識',
+      text: '下列各組詞語中，沒有錯別字的一項是：',
+      options: [
+        '更迭　洽商　出其不意　出奇致勝',
+        '起訖　玷辱　憂心忡忡　如鯁在喉',
+        '仲裁　雕砌　處心積慮　傳頌一時',
+        '陷井　辟謠　吹毛求疵　從長計議'
+      ],
+      answer: 1,
+      explain: [
+        '正解是 B。四詞均无错别字。',
+        'A 中「出奇致勝」应为「出奇制勝」（制：制服）；C 中「處心積慮」虽然常见，但此处题目标准答案为 B；D 中「陷井」应为「陷阱」，「辟謠」应为「闢謠」或「辟谣」。'
+      ]
+    },
+    {
+      id: 'x10',
+      section: '字形',
+      badge: '原书第10题',
+      source: '字形辨析',
+      tag: '錯別字辨識',
+      text: '下列各組詞語中，沒有錯別字的一項是：',
+      options: [
+        '名片　驀然　不記其數　不即不離',
+        '藐視　夢魘　不假思索　不卑不亢',
+        '募捐　通緝　繼往不究　不刊之論',
+        '雜遝　弈棋　不求深解　甯死不屈'
+      ],
+      answer: 1,
+      explain: [
+        '正解是 B。四詞均无错别字。',
+        'A 中「不記其數」应为「不計其數」；C 中「繼往不究」应为「繼往不咎」（咎：责备）；D 中「雜遝」应为「雜沓」，「不求深解」应为「不求甚解」，「甯死不屈」应为「寧死不屈」。'
+      ]
+    },
+
+    /* ===================== 四、標點符號 ===================== */
+    {
+      id: 'b1',
+      section: '標點',
+      badge: '原书第1题',
+      source: '11 年聯校',
+      tag: '標點運用',
+      text: '下列句子中，標點符號使用不正確的一項是：',
+      options: [
+        '陶行知先生（1891-1946）是著名的教育家，1927 年創辦曉莊師範學校，以確立「教學做合一」、「創新教育」等理論聞名於世。',
+        '我的畫常常得到老師的稱讚，但我不清楚，老師到底稱讚我什麼呢？是有幾處畫得特別好，還是勇氣可嘉，什麼都敢畫？',
+        '作者的思路縱橫馳騁：大至國際風雲變幻，人類改造社會、征服自然的壯舉，小到地方風俗、街談巷議、個人的回憶、感想。',
+        '據王粲的《英雄紀鈔》說，諸葛亮與徐庶、石廣元、孟公威等人一道遊學讀書，「三人務於精熟，而亮獨觀其大略」。'
+      ],
+      answer: 2,
+      explain: [
+        '正解是 C。句中「大至……壯舉」与「小到……感想」是同一层次的并列结构，中间应用分号；原句用逗号造成层次不清。',
+        'A、B、D 三项标点使用均符合规范。'
+      ]
+    },
+    {
+      id: 'b2',
+      section: '標點',
+      badge: '原书第2题',
+      source: '10 年聯校',
+      tag: '標點運用',
+      text: '下列句子中標點符號使用不正確的一項是：',
+      options: [
+        '該書作者從政治生活、經濟生活、社會生活、精神生活四個方面把隱士分為：真實的，虛偽的；有業的，無業的；孤僻的，交遊的；養性的，求知的。',
+        '該省提出要大力建成「文化強省」後不久，又發出了《關於開展讀書活動的倡議書》，號召「各級領導幹部行動起來，率先垂範，愛讀書，讀好書，善讀書。」',
+        '上級部門調查後認為，造成這起嚴重事故的主要原因有兩個：一、施工單位對安全問題極不重視；二、具體操作人員違反了有關安全操作的基本規定。',
+        '林徽因是一位帶有「文藝復興」色彩的人，即把多方面的知識才能——文藝的和科學的、人文學科的和工程技術的、東方的和西方的——匯集於一身的人。'
+      ],
+      answer: 1,
+      explain: [
+        '正解是 B。引文「各級領導幹部……善讀書」是「號召」的賓語，不是獨立成句，句末標點應置於引號之外。',
+        'A、C、D 三项标点使用均符合规范。'
+      ]
+    },
+    {
+      id: 'b3',
+      section: '標點',
+      badge: '原书第3题',
+      source: '09 年聯校',
+      tag: '標點運用',
+      text: '下列句子中標點符號使用不正確的一項是：',
+      options: [
+        '大街上到處擺著水果攤，西瓜啊，香蕉啊，煙台蘋果啊，庫爾勒香梨啊……走到哪兒都能聞到誘人的香味。',
+        '干擾素既是制服病毒的法寶，也是抗癌的「生力軍」。近年來，醫學臨床試驗證明：干擾素對淋巴癌、肺癌都有顯著療效。',
+        '美國《時代》週刊稱，奧巴馬的《源自父親的夢想：種族與繼承的故事》一書為「美國政壇有史以來最好看的回憶錄。」',
+        '現在盛行的「山寨」一詞源於廣東話，它是指一種由民間 IT 力量發起的產業現象，主要表現為仿造性、快速化、平民化。'
+      ],
+      answer: 2,
+      explain: [
+        '正解是 C。引文「美國政壇有史以來最好看的回憶錄」是「為」的賓語，屬於句子的組成部分，句末標點應置於引號之外。',
+        'A、B、D 三项标点使用均符合规范。'
+      ]
+    },
+    {
+      id: 'b4',
+      section: '標點',
+      badge: '原书第4题',
+      source: '08 年聯校',
+      tag: '標點運用',
+      text: '下列句子中標點符號使用不正確的一項是：',
+      options: [
+        '這位哲學家堅持了反映論的思想，他認為，人們的認識「只有和外界的事物聯繫起來才可能是堅實可靠的」。',
+        '麥收以後，別的地方都播種完了，就剩下這塊地了，那麼這塊地是種玉米？還是種紅薯呢？村民們一時難以決定。',
+        '文學就是如此奇妙，所以王夫之《姜齋詩話》說：「『昔我往矣，楊柳依依；今我來思，雨雪霏霏。』以樂景寫哀，以哀景寫樂，一倍增其哀樂。」',
+        '黃永玉眼中的藝術家是什麼樣的呢？80 歲的黃永玉在《比我老的老頭》（作家出版社，2003 年）一書中，講述了那些「比他老的老頭」。'
+      ],
+      answer: 1,
+      explain: [
+        '正解是 B。選擇問句中，各分句之間是連貫的疑問關係，第一個問句後應用逗號，只在最後一個問句後用問號。',
+        'A、C、D 三项标点使用均符合规范。'
+      ]
+    },
+    {
+      id: 'b5',
+      section: '標點',
+      badge: '原书第5题',
+      source: '06 年聯校',
+      tag: '標點運用',
+      text: '下列句子中標點符號使用不正確的一項是：',
+      options: [
+        '從 2006 年起，每年 6 月的第二個星期六為中國國家「文化遺產日」。今年 6 月 10 日是我國的第一個「文化遺產日」，主題是「保護文化遺產，守護精神家園」。',
+        '本次音樂節令人注目的是「打擊樂馬拉松音樂會」，中央音樂學院打擊樂團、中國少年交響樂團和美國打擊樂手將從今天下午 2 時一直「打」到夜晚 11 時。',
+        '「一次有這麼多文物保護單位『晉升』國保單位，這與近年來北京在古城保護方面加大投入採取的一系列舉措是分不開的。」今天，市文物局長在接受記者採訪時說。',
+        '對於這個商業古鎮，是讓它因當地無力維修而一點點坍塌直至消亡好呢，還是現在這樣像集市一般鬧鬧哄哄？這似乎又是個哈姆雷特式的「活著，還是死去」？的古老話題。'
+      ],
+      answer: 3,
+      explain: [
+        '正解是 D。「活著，還是死去」是「古老話題」的定語，引號內不應加問號；應改為「活著，還是死去」的古老話題。',
+        'A、B、C 三项标点使用均符合规范。'
+      ]
+    },
+    {
+      id: 'b7',
+      section: '標點',
+      badge: '原书第7题',
+      source: '12 年澳大',
+      tag: '標點運用',
+      text: '以下各句中，標點有誤的是：',
+      options: [
+        '曾在北京舉辦過演唱會的著名歌手的歌聲，正如蘇東坡在《赤壁賦》裡所寫的那樣「餘音嫋嫋，不絕如縷」。',
+        '珠海基礎設施完善，服務體系到位，目前已走上了可持續發展的快車道，它是那樣歡快、昂揚、奮發、正向輝煌的明天奔去。',
+        '講述一件事，希望別人了解；闡述一道理，希望別人明白；提出一請求，希望別人應允。這就是交際的目的。',
+        '避諱之風源遠流長，「其俗起於周，成於秦，盛於唐宋」（陳垣《史諱舉例·序》）。學者對其起源進行探究，是很有意義的。'
+      ],
+      answer: 2,
+      explain: [
+        '正解是 C。前面三個並列分句是對「交際的目的」的具體說明，末尾的句號應改為冒號，以總結下文。',
+        'A、B、D 三项标点使用均符合规范。'
+      ]
+    },
+    {
+      id: 'b8',
+      section: '標點',
+      badge: '原书第8题',
+      source: '13 年理工',
+      tag: '標點選填',
+      text: `下列短文中括號處依次填入標點符號和文字正確的一項是：
+這種傾向從哪裡可以看出呢？主要表現在商品標記和文字說明上（　）明明是（　）中國製造的產品，購買者也是中國人，但他們卻喜歡冒充洋貨（　）或者在商標上（　）包裝上（　）說明書的圖片、文字中印上些洋文，甚至連一個中國字也沒有。`,
+      options: [
+        '冒號　句號　逗號　逗號　頓號',
+        '句號　逗號　頓號　頓號　「和」',
+        '逗號　分號　頓號　頓號　頓號',
+        '感嘆號　句號　逗號　逗號　「或」'
+      ],
+      answer: 0,
+      explain: [
+        '正解是 A。按五個括號位置依次填入：冒號、句號、逗號、逗號、頓號。',
+        'B、C、D 三项填入后均不能形成通顺、层次分明的句读。'
+      ]
+    },
+    {
+      id: 'b9',
+      section: '標點',
+      badge: '原书第9题',
+      source: '12 年理工',
+      tag: '標點運用',
+      text: '下列句子中，標點符號使用正確的一項是：',
+      options: [
+        '山海關，這號稱天下“第一關”的山海關！',
+        '山海關，這號稱：“天下第一關”的山海關！',
+        '山海關，這號稱“天下第一關”的山海關！',
+        '山海關！這號稱“天下第一關”的山海關！'
+      ],
+      answer: 2,
+      explain: [
+        '正解是 C。「天下第一關」是特定稱謂，用雙引號標示；句中無需加冒號，句末用感嘆號表強調。',
+        'A 只引了「第一關」，丟失了「天下」；B 中「號稱」後不應加冒號；D 將「山海關」後的逗號誤作感嘆號，破壞了句子語氣的連貫性。'
+      ]
+    },
+
+    /* ===================== 五、成語 ===================== */
+    {
+      id: 'c1',
+      section: '成語',
+      badge: '原书第1题',
+      source: '2014 年聯校',
+      tag: '成語運用',
+      text: '下列各句中，劃線的成語使用恰當的一句是：',
+      options: [
+        '他開創了青藏高原氣象學，創立了大氣長波能量頻散理論，又{{博採眾長}}，提出了有序人力活動、適應氣候變化的理論框架。',
+        '諾貝爾獎雖然不代表一國科研的整體實力，但畢竟是{{獨樹一幟}}的標誌。專家指出，要培養出能獲獎的人才尚需克服弊端，快馬加鞭。',
+        '學校組織的「田間課堂」活動讓三百多名學生{{蠢蠢欲動}}，他們在老師和當地農業工人的引領下高興地開始了採摘棉花的勞動。',
+        '有些人名往往很難在電腦上打出來，這給辦理證件帶來了不少麻煩。《通用規範漢字表》發佈之後，這些問題將{{瑕瑜互見}}。'
+      ],
+      answer: 0,
+      explain: [
+        '正解是 A。{{博採眾長}}指廣泛吸取各人的長處，用於描述他在開創學科之外又吸收他人優點、提出新理論，語境恰當。',
+        'B 中{{獨樹一幟}}指自成一家、風格獨特，不能形容「諾貝爾獎」這個獎項；C 中{{蠢蠢欲動}}是貶義詞，指壞人準備搗亂，不能用於學生勞動；D 中{{瑕瑜互見}}指優缺點都有，不能說「問題將瑕瑜互見」。'
+      ]
+    },
+    {
+      id: 'c2',
+      section: '成語',
+      badge: '原书第2题',
+      source: '2013 年聯校',
+      tag: '成語運用',
+      text: '下列各句中，劃線的成語使用恰當的一句是：',
+      options: [
+        '在新賽季裡，這支去年的冠軍隊完全喪失了昔日的王者風範，只有這一場球打得還算{{差強人意}}。',
+        '為了寫好這篇論文，陳教授到處查找文獻、{{斷章取義}}，做了上千張卡片，費了很多時間和精力。',
+        '英國女作家伍爾夫著作等身，是意識流文學的{{始作俑者}}，應當在現當代文學史上佔有一席之地。',
+        '在互聯網知識競賽頒獎會上，小李說得頭頭是道，{{左右逢源}}，使得在場的專家們都驚嘆不已。'
+      ],
+      answer: 0,
+      explain: [
+        '正解是 A。{{差強人意}}指大體上還能使人滿意，用於「只有這一場球打得還算令人滿意」，語境恰當。',
+        'B 中{{斷章取義}}是貶義詞，指不顧全篇孤立截取一段意思，不能用於認真做學問；C 中{{始作俑者}}是貶義詞，指惡劣風氣的創始者，不能用於文學流派創始人；D 中{{左右逢源}}指處世圓滑或做事得心應手，不能形容「說話」令人驚嘆。'
+      ]
+    },
+    {
+      id: 'c3',
+      section: '成語',
+      badge: '原书第3题',
+      source: '2012 年聯校',
+      tag: '成語運用',
+      text: '下列各句中，劃線的成語使用恰當的一句是：',
+      options: [
+        '張主任搞技術革新樣樣在行，對產品銷售也{{滿腹經綸}}，是個非常難得的人才。',
+        '劉老師雖說已經退休，但他卻{{年富力強}}，思路敏捷，精力充沛，簡直像一個小夥子。',
+        '有關自己的身世，他從來都沒有說過，即使別人有時問起來，他也總是{{諱莫如深}}。',
+        '李導演{{妙手回春}}，把潘金蓮從傳統小說中的蕩婦形象，改成追求個性解放的新女性。'
+      ],
+      answer: 2,
+      explain: [
+        '正解是 C。{{諱莫如深}}指把事情隱瞞得很緊，用於他對自己的身世閉口不談，語境恰當。',
+        'A 中{{滿腹經綸}}形容人有治國安邦的才學，不能用於「產品銷售」；B 中{{年富力強}}指年紀輕、精力旺盛，與「已經退休」矛盾；D 中{{妙手回春}}專指醫生醫術高明，能把垂危病人治好，不能用於導演改編角色。'
+      ]
+    },
+    {
+      id: 'c4',
+      section: '成語',
+      badge: '原书第4题',
+      source: '2011 年聯校',
+      tag: '成語運用',
+      text: '下列各句中，加底線的成語使用恰當的一句是：',
+      options: [
+        '實驗已經進入最後衝刺階段，但由於李技術員的一個小小疏忽，最終還是{{功敗垂成}}。',
+        '地震之後，這裡迅速建起了房子，恢復了生產，要是沒有全國人民的支持，那是不堪回首的。',
+        '老李追進小巷後才發現，兩個歹徒分別站在小巷兩頭，自己在中間，他想這次真是{{首鼠兩端}}，別無退路，唯有一拚了。',
+        '書山，是知識之山、智慧之山、文明之山。嚮往書山之心，人皆有之，而且{{俯拾即是}}。'
+      ],
+      answer: 0,
+      explain: [
+        '正解是 A。{{功敗垂成}}指事情在將要成功的時候遭到失敗，用於實驗最後衝刺階段因疏忽而失敗，語境恰當。',
+        'B 中「不堪回首」指不忍回憶往事，與「已經恢復生產」的正面語境矛盾；C 中{{首鼠兩端}}指猶豫不決、動搖不定，不能形容被夾在中間無路可退；D 中{{俯拾即是}}指地上的東西很多，一彎腰就能撿到，不能形容「嚮往書山之心」。'
+      ]
+    },
+    {
+      id: 'c5',
+      section: '成語',
+      badge: '原书第5题',
+      source: '2010 年聯校',
+      tag: '成語運用',
+      text: '下列各句中，劃線的成語使用恰當的一句是：',
+      options: [
+        '面對世界金融危機，中國政府拿出 4 萬億人民幣拉動內需，此舉一出，{{石破天驚}}，即刻引起各方的廣泛關注，輿論評價更是一片讚揚之聲。',
+        '作為一個華人，憑著天才般的想像力，他在美國{{牛刀初試}}，{{鋒芒畢露}}，掀起了 IT 行業的一場革命，成為人們關注的焦點。',
+        '這樣的小錯誤對於整個專案的要求來說是無傷大雅、{{不足為訓}}的，我們絕不能只糾纏於細枝末節，而忘記了根本的目標。',
+        '語文教師的作用正是要設法把學生帶入作品特定的語言環境中，使學生能夠{{身臨其境}}，{{感同身受}}，更好地理解作品的深意。'
+      ],
+      answer: 3,
+      explain: [
+        '正解是 D。{{身臨其境}}指親自到了那個境地，{{感同身受}}指雖未親身經歷，但感受如同親身經歷；兩者連用形容學生進入作品情境、深切體會，語境恰當。',
+        'A 中{{石破天驚}}多形容文章、議論、藝術等新奇驚人，不用於形容政策舉措；B 中雖然兩個成語單看都可以，但「牛刀初試」與「掀起革命」的程度不夠匹配，且標準答案取 D；C 中{{不足為訓}}指不值得作為準則或典範，與「無傷大雅」連用意思矛盾。'
+      ]
+    },
+    {
+      id: 'c6',
+      section: '成語',
+      badge: '原书第6题',
+      source: '成語',
+      tag: '成語運用',
+      text: '下列各句中劃線的成語使用恰當的一句是：',
+      options: [
+        '美國政府在臺灣問題上的{{危言危行}}，只能搬起石頭砸自己的腳。',
+        '人們提到秋白同志，總會說起他是那樣大公無私，光明磊落，{{求全責備}}自己。',
+        '這篇論文觀點新穎，論據有力，材料豐富，文字精當，堪稱{{不刊之論}}。',
+        '白居易在地方為官時很注意接近民眾，不管是鄉閭農婦還是{{下里巴人}}，他都能談得來，從他們那裡得到了很多創作素材。'
+      ],
+      answer: 2,
+      explain: [
+        '正解是 C。{{不刊之論}}指不能改動或不可磨滅的言論，形容言論精當無懈可擊，用於稱讚這篇論文，語境恰當。',
+        'A 中{{危言危行}}指說正直的話、做正直的事，是褒義詞，不能用於美國政府；B 中{{求全責備}}指對人或事要求十全十美，常用於「對……求全責備」，不能說「求全責備自己」；D 中{{下里巴人}}原指通俗的民間歌曲，後泛指通俗的文藝作品，不能指「鄉閭農婦」等普通人。'
+      ]
+    },
+    {
+      id: 'c7',
+      section: '成語',
+      badge: '原书第7题',
+      source: '成語',
+      tag: '成語運用',
+      text: '下列各句中劃線的成語使用恰當的一句是：',
+      options: [
+        '最近到沿海地區，雖然只是{{浮光掠影}}地看看，但那裡的變化，卻給我留下了極深刻的印象。',
+        '心理思想的研究{{源遠流長}}，早在我國戰國時代《內經》一書中，就有了心理因素在人體疾病的發生、診斷和預防中起著重要作用的系統總結。',
+        '他在地主家當長工的時候，吃的是{{粗茶淡飯}}，住的是豬棚狗窩，幹的是牛馬活兒。',
+        '第一次見到王師傅便喜歡上了她，那輕柔的嗓音，那甜美的微笑，一看便知是個{{一團和氣}}的人。'
+      ],
+      answer: 1,
+      explain: [
+        '正解是 B。{{源遠流長}}指歷史悠久、根底深厚，用於「心理思想的研究」從戰國時代就有記載，語境恰當。',
+        'A 中{{浮光掠影}}指觀察不細緻、印象不深刻，與後文「留下極深刻的印象」矛盾；C 中{{粗茶淡飯}}形容生活儉樸，不能形容長工被迫吃的劣質食物；D 中{{一團和氣}}現多指不分是非、無原則地保持和氣，用於形容人「溫和」不夠恰當。'
+      ]
+    },
+    {
+      id: 'c8',
+      section: '成語',
+      badge: '原书第8题',
+      source: '成語',
+      tag: '成語運用',
+      text: '下列各句中劃線的成語使用恰當的一句是：',
+      options: [
+        '這個展覽會規模宏大，其展品可以說是{{包羅萬象}}，美不勝收。',
+        '他把{{相敬如賓}}當作與朋友交往的一條起碼原則，但在生活中他卻常常得不到別人的尊敬，他為之很苦惱。',
+        '王軍和李剛是男籃的主力隊員，他們既是同鄉又是同學，{{兩小無猜}}，在場上配合得非常好。',
+        '他們倆人在拜把兄弟時曾經{{海誓山盟}}，永不背叛，可到了商戰的關鍵時刻，竟成了仇敵。'
+      ],
+      answer: 0,
+      explain: [
+        '正解是 A。{{包羅萬象}}形容內容豐富、應有盡有，用於形容展覽會展品豐富，語境恰當。',
+        'B 中{{相敬如賓}}專指夫妻之間互相尊敬，不能用於朋友；C 中{{兩小無猜}}指男女小時候在一起玩耍、天真無邪，不能用於兩個男性隊友；D 中{{海誓山盟}}指男女相愛時立下的誓言，不能用於拜把兄弟。'
+      ]
+    },
+    {
+      id: 'c9',
+      section: '成語',
+      badge: '原书第9题',
+      source: '成語',
+      tag: '成語運用',
+      text: '下列各句中劃線的成語使用恰當的一句是：',
+      options: [
+        '今年 1 月 4 日，武漢商場黃金櫃檯發生一起{{震撼人心}}的持槍搶劫案。',
+        '老王總是心直口快，{{黨同伐異}}，對有缺點的同志總是一針見血地指出。',
+        '對於帝國主義日益加緊的經濟、文化侵略，清政府不但未加抵抗，反而{{開門揖盜}}。',
+        '今天天氣真好，我們在操場上真個有{{如坐春風}}之感。'
+      ],
+      answer: 2,
+      explain: [
+        '正解是 C。{{開門揖盜}}比喻引進壞人，自招禍患，用於清政府不抵抗侵略反而引狼入室，語境恰當。',
+        'A 中{{震撼人心}}多指正面、感人的事情使人內心震動，不能用於搶劫案；B 中{{黨同伐異}}是貶義詞，指結幫分派、打擊異己，與「心直口快、指出缺點」的語境不符；D 中{{如坐春風}}比喻受到良師的教誨、熏陶，不能用於天氣好、在操場上。'
+      ]
+    },
+    {
+      id: 'c10',
+      section: '成語',
+      badge: '原书第10题',
+      source: '成語',
+      tag: '成語運用',
+      text: '下列各句中劃線的成語使用恰當的一句是：',
+      options: [
+        '我們決不能因某一事的成功而{{沾沾自喜}}，就此滿足。',
+        '張廠長的一席話起到了{{拋磚引玉}}的作用，引出了許多提高產品品質的好建議。',
+        '很少有人知道，他最近還出版了一本文不對題，又幾乎沒有注釋的舊體詩集子，文字比較艱深，讀起來確實累人。',
+        '齊白石畫展在美術館開幕了，國畫研究院的畫家競相觀摩，藝術愛好者{{趨之若鶩}}。'
+      ],
+      answer: 0,
+      explain: [
+        '正解是 A。{{沾沾自喜}}形容自以為不錯而得意的樣子，用於告誡不要因一時成功而滿足，語境恰當。',
+        'B 中{{拋磚引玉}}是謙辭，只能用於自己，不能說別人（張廠長）的話起到拋磚引玉的作用；C 中「文不對題」指文章內容與題目不符，或說話離題，不能形容「舊體詩集子」文字艱深；D 中{{趨之若鶩}}是貶義詞，比喻許多人爭著追逐不好的事物，不能用於藝術愛好者看畫展。'
+      ]
+    }
+  ]
+};
+
+function validData(d){
+  return d && d.questions && Array.isArray(d.questions) && d.questions.length > 0;
+}
+
+const DATA = (validData(window.QUIZ_DATA) ? window.QUIZ_DATA : EMBEDDED_FALLBACK);
+const QUESTIONS = DATA.questions;
+const LETTERS = ['A','B','C','D','E','F'];
+const SECTION_ORDER = ['漢字','字音','字形','標點','成語'];
+
+let sectionIdx = 0;      // 当前轮到 SECTION_ORDER 中的第几个大类
+let sectionQueue = [];   // 当前大类剩余未做的题目队列
+let currentSection = ''; // 当前正在做的大类
+let sectionSwitched = false;
+let picked = false;
+let currentMode = 'cycle'; // cycle | random | section-xxx
+let lastQid = null;
+
+const $ = id => document.getElementById(id);
+
+// 把 {{成語}} 替換為帶紅色下劃線的 span
+function fmt(s){
+  return (s || '').replace(/\{\{([^}]+)\}\}/g, '<span class="idiom">$1</span>');
+}
+
+// 顯示版本號
+$('versionInfo').innerHTML = `版本 ${DATA.meta.version} · ${QUESTIONS.length} 題<br><span style="color:#d0d0d0">若內容未更新，請刷新頁面（Ctrl+R）</span>`;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickNext(){
+  if(!QUESTIONS.length){
+    $('card').innerHTML = '<div class="empty"><div class="big">📂</div>题库为空<br>请检查「题库数据.js」是否包含题目</div>';
+    return;
+  }
+
+  let q;
+  if(currentMode === 'random'){
+    // 全部隨機：所有題中隨機抽，盡量避免連續重複同一題
+    do { q = QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)]; }
+    while(q.id === lastQid && QUESTIONS.length > 1);
+  }
+  else if(currentMode.startsWith('section-')){
+    // 專項訓練：只在選定大類內隨機抽
+    const sec = currentMode.replace('section-', '');
+    const pool = QUESTIONS.filter(x => x.section === sec);
+    if(!pool.length){
+      $('question').innerHTML = `<div class="empty">「${sec}」暫無題目</div>`;
+      return;
+    }
+    do { q = pool[Math.floor(Math.random() * pool.length)]; }
+    while(q.id === lastQid && pool.length > 1);
+  }
+  else {
+    // 大類輪詢（默認）
+    while(!sectionQueue.length){
+      const sec = SECTION_ORDER[sectionIdx % SECTION_ORDER.length];
+      sectionIdx++;
+      const pool = QUESTIONS.filter(x => x.section === sec);
+      if(!pool.length) continue;
+      if(sec !== currentSection){
+        currentSection = sec;
+        sectionSwitched = true;
+      }
+      sectionQueue = shuffle(pool);
+    }
+    q = sectionQueue.shift();
+  }
+
+  lastQid = q.id;
+  picked = false;
+  render(q);
+}
+
+function render(q){
+  const sec = q.section || '';
+
+  if(currentMode === 'cycle'){
+    const totalInSection = QUESTIONS.filter(x => x.section === sec).length;
+    const done = totalInSection - sectionQueue.length;
+    $('sectionTitle').textContent = `${sec} · 第 ${done}/${totalInSection} 题`;
+  }else if(currentMode.startsWith('section-')){
+    const target = currentMode.replace('section-', '');
+    const total = QUESTIONS.filter(x => x.section === target).length;
+    $('sectionTitle').textContent = `${target} 專項 · ${total} 題`;
+  }else{
+    $('sectionTitle').textContent = '全部隨機';
+  }
+
+  // 大類輪詢切換時顯示提示
+  const switchBox = $('sectionSwitch');
+  if(currentMode === 'cycle' && sectionSwitched){
+    switchBox.innerHTML = `<span class="tag">进入「${sec}」部分</span>`;
+    sectionSwitched = false;
+  }else{
+    switchBox.innerHTML = '';
+  }
+
+  $('meta').innerHTML = [
+    q.badge ? `<span>${q.badge}</span>` : '',
+    q.source ? `<span>${q.source}</span>` : '',
+    q.tag ? `<span>${q.tag}</span>` : ''
+  ].filter(Boolean).join('');
+
+  $('question').innerHTML = fmt(q.text);
+
+  $('options').innerHTML = q.options.map((o,i)=>`
+    <button class="option" data-i="${i}">
+      <span class="letter">${LETTERS[i]}</span>
+      <span>${fmt(o)}</span>
+      <span class="mark"></span>
+    </button>
+  `).join('');
+  $('feedback').innerHTML = '';
+
+  document.querySelectorAll('.option').forEach(btn=>{
+    btn.addEventListener('click', ()=>onPick(q, parseInt(btn.dataset.i,10)));
+  });
+}
+
+function onPick(q, i){
+  if(picked) return;
+  picked = true;
+  const ok = i === q.answer;
+
+  document.querySelectorAll('.option').forEach(btn=>{
+    const idx = parseInt(btn.dataset.i,10);
+    btn.disabled = true;
+    if(idx === q.answer){ btn.classList.add('correct'); btn.querySelector('.mark').textContent = '✓'; }
+    else if(idx === i){ btn.classList.add('wrong'); btn.querySelector('.mark').textContent = '✗'; }
+    else btn.classList.add('dim');
+  });
+
+  $('feedback').innerHTML = `
+    <div class="feedback ${ok ? 'good' : 'bad'}">
+      <div class="ans">${ok ? '✓ 正确' : `✗ 错误，正确答案是 ${LETTERS[q.answer]}`}</div>
+      ${q.explain.map(p=>`<p>${fmt(p)}</p>`).join('')}
+    </div>
+    <button class="btn btn-primary" id="nextBtn">下一题</button>
+    <div class="hint">快捷键：A/B/C/D 选题，Enter 下一题</div>
+  `;
+  $('nextBtn').addEventListener('click', pickNext);
+  $('nextBtn').focus();
+}
+
+function setMode(mode){
+  currentMode = mode;
+  sectionQueue = [];
+  sectionIdx = 0;
+  currentSection = '';
+  sectionSwitched = false;
+  lastQid = null;
+  updateModeButtons();
+  pickNext();
+}
+
+function updateModeButtons(){
+  const labels = [
+    {key:'cycle', label:'全部輪詢'},
+    {key:'random', label:'全部隨機'},
+    {key:'section-漢字', label:'漢字'},
+    {key:'section-字音', label:'字音'},
+    {key:'section-字形', label:'字形'},
+    {key:'section-標點', label:'標點'},
+    {key:'section-成語', label:'成語'}
+  ];
+  $('modeButtons').innerHTML = labels.map(b=>`
+    <button class="mode-btn ${currentMode === b.key ? 'active' : ''}" data-mode="${b.key}">${b.label}</button>
+  `).join('');
+  document.querySelectorAll('.mode-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>setMode(btn.dataset.mode));
+  });
+}
+
+document.addEventListener('keydown', e=>{
+  const k = e.key.toLowerCase();
+  const map = {'1':0,'2':1,'3':2,'4':3,'5':4,'6':5,'a':0,'b':1,'c':2,'d':3,'e':4,'f':5};
+  if(!picked && k in map){
+    const btn = document.querySelector(`.option[data-i="${map[k]}"]`);
+    if(btn) btn.click();
+  }else if(picked && k === 'enter'){
+    const nb = $('nextBtn');
+    if(nb) nb.click();
+  }
+});
+
+updateModeButtons();
+pickNext();
+</script>
+</body>
+</html>
